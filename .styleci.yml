@@ -1,0 +1,6 @@
+preset: psr12
+
+risky: true
+
+enabled:
+  - php_unit_strict
