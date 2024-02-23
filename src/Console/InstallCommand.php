@@ -10,7 +10,7 @@ class InstallCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected $signature = 'email-smtp:install';
+    protected $signature = 'laravel-multi-smtp:install';
 
     /**
      * {@inheritdoc}
