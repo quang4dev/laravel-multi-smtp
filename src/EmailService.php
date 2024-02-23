@@ -15,6 +15,7 @@ use Quang4dev\MultiSmtp\Models\SmtpCountingEmail;
  * @property string $host
  * @property string $from
  * @property string $username
+ * @property string $counting
  */
 class EmailService
 {
@@ -52,6 +53,7 @@ class EmailService
             $this->username = $emailConfig->username;
             $this->from = $emailConfig->from;
             $this->host = $emailConfig->host;
+            $this->counting = $this->smtpCounting->counting;
             return $this;
         }
 
