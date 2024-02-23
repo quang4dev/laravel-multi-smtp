@@ -12,8 +12,12 @@ use Illuminate\Support\Facades\Config;
  */
 class SmtpCountingEmail extends Model
 {
+
+    protected $fillable = ['date', 'counting'];
+    public $timestamps = false;
+
     public function getTable()
     {
-        return 'smtp_counting_emails`';
+        return 'smtp_counting_emails';
     }
 }

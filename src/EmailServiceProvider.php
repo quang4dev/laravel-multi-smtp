@@ -25,10 +25,17 @@ class EmailServiceProvider extends ServiceProvider
     private function registerPublishing()
     {
         if ($this->app->runningInConsole()) {
-            if (!class_exists('CreateEmailConfigsTable')) {
+            if (!class_exists('CreateSmtpConfigsTable')) {
                 $this->publishes([
                     __DIR__ . '/../database/migrations/smtp_configs.stub' => database_path(
                         sprintf('migrations/%s_create_smtp_configs_table.php', date('Y_m_d_His'))
+                    ),
+                ], 'migrations');
+            }
+            if (!class_exists('CreateSmtpCountingEmailsTable')) {
+                $this->publishes([
+                    __DIR__ . '/../database/migrations/smtp_counting_emails.stub' => database_path(
+                        sprintf('migrations/%s_create_smtp_counting_emails_table.php', date('Y_m_d_His'))
                     ),
                 ], 'migrations');
             }

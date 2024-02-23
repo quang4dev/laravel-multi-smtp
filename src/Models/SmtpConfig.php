@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Config;
  * @property string $host
  * @property string $port
  * @property string $encryption
+ * @property string $from
  * @property string $username
  * @property string $password
  */
@@ -18,6 +19,6 @@ class SmtpConfig extends Model
 {
     public function getTable(): string
     {
-        return 'smtp_configs`';
+        return 'smtp_configs';
     }
 }

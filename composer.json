@@ -1,5 +1,5 @@
 {
-    "name": "quang4dev/multiple-email-smtp",
+    "name": "quang4dev/laravel-multi-smtp",
     "description": "Multiple Email SMTP manager of your Laravel/Lumen app",
     "keywords": [
         "email",

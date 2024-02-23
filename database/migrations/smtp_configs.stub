@@ -13,14 +13,13 @@ class CreateSmtpConfigsTable extends Migration
      */
     public function up()
     {
-        $connection = config('database.default');
-
-        Schema::connection($connection)->create('smtp_configs', function (Blueprint $table) {
+        Schema::create('smtp_configs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('transport', 100);
             $table->string('host', 100);
             $table->string('port', 100);
             $table->string('encryption', 100);
+            $table->string('from', 100);
             $table->string('username', 100);
             $table->string('password', 100);
         });
@@ -35,6 +34,6 @@ class CreateSmtpConfigsTable extends Migration
     {
         $connection = config('database.default');
 
-        Schema::connection($connection)->drop('smtp_configs');
+        Schema::drop('smtp_configs');
     }
 }

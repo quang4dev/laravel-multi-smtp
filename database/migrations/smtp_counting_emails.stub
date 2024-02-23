@@ -13,9 +13,7 @@ class CreateSmtpCountingEmailsTable extends Migration
      */
     public function up()
     {
-        $connection = config('database.default');
-
-        Schema::connection($connection)->create('smtp_counting_emails', function (Blueprint $table) {
+        Schema::create('smtp_counting_emails', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('date', 100);
             $table->integer('counting')->default(0);
@@ -29,8 +27,6 @@ class CreateSmtpCountingEmailsTable extends Migration
      */
     public function down()
     {
-        $connection = config('database.default');
-
-        Schema::connection($connection)->drop('smtp_counting_emails');
+        Schema::drop('smtp_counting_emails');
     }
 }
