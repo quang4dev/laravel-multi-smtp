@@ -79,30 +79,24 @@ class EmailService
     }
 
     private function findSmtpConfig($param) {
-        $smtpQuotas = SmtpConfig::get()->pluck('quota');
+        $smtpQuotas = SmtpConfig::get()->pluck('quota')->toArray();
         $total = array_sum($smtpQuotas);
+        $currentIndex = 0;
+        $runningTotal = 0;
 
         if ($param > $total) {
             return "Error: Parameter exceeds total";
         }
 
-        $left = 0;
-        $right = count($smtpQuotas) - 1;
-
-        while ($left <= $right) {
-            $mid = $left + floor(($right - $left) / 2);
-            $midValue = $smtpQuotas[$mid];
-
-            if ($midValue == $param) {
-                return $mid;
-            } elseif ($midValue < $param) {
-                $left = $mid + 1;
-            } else {
-                $right = $mid - 1;
+        foreach ($smtpQuotas as $index => $value) {
+            $runningTotal += $value;
+            if ($param <= $runningTotal) {
+                $currentIndex = $index;
+                break;
             }
         }
 
-        return $right;
+        return SmtpConfig::find($currentIndex + 1);
     }
 
 }
