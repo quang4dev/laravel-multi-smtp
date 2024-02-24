@@ -85,7 +85,8 @@ class EmailService
         $runningTotal = 0;
 
         if ($param > $total) {
-            return "Error: Parameter exceeds total";
+            \Log::error('Error: SMTP exceeds limited');
+            return null;
         }
 
         foreach ($smtpQuotas as $index => $value) {
