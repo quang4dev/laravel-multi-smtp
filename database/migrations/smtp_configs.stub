@@ -22,6 +22,7 @@ class CreateSmtpConfigsTable extends Migration
             $table->string('from', 100);
             $table->string('username', 100);
             $table->string('password', 100);
+            $table->integer('quota');
         });
     }
 

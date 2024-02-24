@@ -34,9 +34,7 @@ class EmailService
         $now = Carbon::now()->format('Y-m-d');
         $this->smtpCounting = SmtpCountingEmail::firstOrCreate(['date' => $now], ['counting' => 0]);
 
-        $id = ($this->smtpCounting->counting + 1) / 500;
-        $id = ceil($id);
-        $emailConfig = SmtpConfig::find($id);
+        $emailConfig = $this->findSmtpConfig($this->smtpCounting->counting + 1);
         if ($emailConfig) {
             $config = [
                 'transport'  => $emailConfig->transport,
@@ -79,4 +77,32 @@ class EmailService
         $this->smtpCounting->counting -= $this->smtpCounting->counting ?? 1;
         $this->smtpCounting->save();
     }
+
+    private function findSmtpConfig($param) {
+        $smtpQuotas = SmtpConfig::get()->pluck('quota');
+        $total = array_sum($smtpQuotas);
+
+        if ($param > $total) {
+            return "Error: Parameter exceeds total";
+        }
+
+        $left = 0;
+        $right = count($smtpQuotas) - 1;
+
+        while ($left <= $right) {
+            $mid = $left + floor(($right - $left) / 2);
+            $midValue = $smtpQuotas[$mid];
+
+            if ($midValue == $param) {
+                return $mid;
+            } elseif ($midValue < $param) {
+                $left = $mid + 1;
+            } else {
+                $right = $mid - 1;
+            }
+        }
+
+        return $right;
+    }
+
 }
