@@ -26,7 +26,7 @@ class EmailService
     private $smtpCounting;
 
     /**
-     * @return $this|false
+     * @return $this|null
      */
     public function getMailer()
     {
@@ -55,7 +55,7 @@ class EmailService
         }
 
         \Log::error('Error: SMTP config not found!');
-        return false;
+        return null;
     }
 
     /**
