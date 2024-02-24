@@ -55,7 +55,8 @@ class EmailService
             return $this;
         }
 
-        throw new \Exception('Email config not found');
+        \Log::error('Error: SMTP config not found!');
+        return null;
     }
 
     /**
