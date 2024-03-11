@@ -47,6 +47,9 @@ class EmailService
             \Config::set("mail.mailers.$emailConfig->username", $config);
             \Config::set('mail.default', $emailConfig->username);
 
+            \Config::set("from.address", $emailConfig->from);
+            \Config::set('from.name', $emailConfig->from_name);
+
             $this->username = $emailConfig->username;
             $this->from = $emailConfig->from;
             $this->host = $emailConfig->host;
