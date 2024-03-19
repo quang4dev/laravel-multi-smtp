@@ -81,6 +81,15 @@ class EmailService
         $this->smtpCounting->save();
     }
 
+    /**
+     * @return float|int
+     */
+    public function totalQuota()
+    {
+        $smtpQuotas = SmtpConfig::get()->pluck('quota')->toArray();
+        return array_sum($smtpQuotas);
+    }
+
     private function findSmtpConfig($param) {
         $smtpQuotas = SmtpConfig::get()->pluck('quota')->toArray();
         $total = array_sum($smtpQuotas);
