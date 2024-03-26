@@ -35,20 +35,21 @@ class EmailService
 
         $emailConfig = $this->findSmtpConfig($this->smtpCounting->counting + 1);
         if ($emailConfig) {
-            $config = [
+
+            \Config::set("mail.mailers.$emailConfig->username", [
                 'transport'  => $emailConfig->transport,
                 'host'       => $emailConfig->host,
                 'port'       => $emailConfig->port,
                 'encryption' => $emailConfig->encryption,
                 'username'   => $emailConfig->username,
                 'password'   => $emailConfig->password,
-            ];
-
-            \Config::set("mail.mailers.$emailConfig->username", $config);
+            ]);
             \Config::set('mail.default', $emailConfig->username);
 
-            \Config::set("from.address", $emailConfig->from);
-            \Config::set('from.name', $emailConfig->from_name);
+            \Config::set("mail.from", [
+                'address' => $emailConfig->from,
+                'name' => $emailConfig->from_name,
+            ]);
 
             $this->username = $emailConfig->username;
             $this->from = $emailConfig->from;
