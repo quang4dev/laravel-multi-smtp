@@ -24,8 +24,17 @@ class EmailService
     public $from;
     public $username;
     public $quota;
+    public $mailerPath = '';
 
+    /** @var SmtpCountingEmail */
     private $smtpCounting;
+    private $defaultByUsername;
+
+    public function __construct($mailerPath = 'mailers', $defaultByUsername = true)
+    {
+        $this->mailerPath = $mailerPath;
+        $this->defaultByUsername = false;
+    }
 
     /**
      * @return $this|null
@@ -34,19 +43,28 @@ class EmailService
     {
         $now = Carbon::now()->format('Y-m-d');
         $this->smtpCounting = SmtpCountingEmail::firstOrCreate(['date' => $now], ['counting' => 0]);
+        $this->smtpCounting->increment('counting', 1);
 
-        $emailConfig = $this->findSmtpConfig($this->smtpCounting->counting + 1);
+        $emailConfig = $this->findSmtpConfig($this->smtpCounting->counting);
         if ($emailConfig) {
 
-            \Config::set("mail.mailers.$emailConfig->username", [
-                'transport'  => $emailConfig->transport,
-                'host'       => $emailConfig->host,
-                'port'       => $emailConfig->port,
-                'encryption' => $emailConfig->encryption,
-                'username'   => $emailConfig->username,
-                'password'   => $emailConfig->password,
-            ]);
-            \Config::set('mail.default', $emailConfig->username);
+            $mailerFullPath = implode('.', array_filter([
+                'mail',
+                $this->mailerPath,
+                $this->defaultByUsername ? $emailConfig->username : ''
+            ], 'strlen'));
+
+            \Config::set("$mailerFullPath.driver", $emailConfig->transport);
+            \Config::set("$mailerFullPath.transport", $emailConfig->transport);
+            \Config::set("$mailerFullPath.host", $emailConfig->host);
+            \Config::set("$mailerFullPath.port", $emailConfig->port);
+            \Config::set("$mailerFullPath.encryption", $emailConfig->encryption);
+            \Config::set("$mailerFullPath.username", $emailConfig->username);
+            \Config::set("$mailerFullPath.password", $emailConfig->password);
+
+            if ($this->defaultByUsername) {
+                \Config::set('mail.default', $emailConfig->username);
+            }
 
             \Config::set("mail.from", [
                 'address' => $emailConfig->from,
@@ -72,8 +90,7 @@ class EmailService
      */
     public function countUp()
     {
-        $this->smtpCounting->counting += 1;
-        $this->smtpCounting->save();
+        $this->smtpCounting->increment('counting', 1);
     }
 
     /**
@@ -82,8 +99,7 @@ class EmailService
      */
     public function counDown()
     {
-        $this->smtpCounting->counting -= $this->smtpCounting->counting ?? 1;
-        $this->smtpCounting->save();
+        $this->smtpCounting->decrement('counting', 1);
     }
 
     /**
@@ -95,20 +111,20 @@ class EmailService
         return array_sum($smtpQuotas);
     }
 
-    private function findSmtpConfig($param) {
+    private function findSmtpConfig($counting) {
         $smtpQuotas = SmtpConfig::get()->pluck('quota')->toArray();
         $total = array_sum($smtpQuotas);
         $currentIndex = 0;
         $runningTotal = 0;
 
-        if ($param > $total) {
+        if ($counting > $total) {
             \Log::error('Error: SMTP exceeds limited');
             return null;
         }
 
         foreach ($smtpQuotas as $index => $value) {
             $runningTotal += $value;
-            if ($param <= $runningTotal) {
+            if ($counting <= $runningTotal) {
                 $currentIndex = $index;
                 break;
             }
